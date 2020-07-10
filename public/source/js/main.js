@@ -1,5 +1,207 @@
-/* grid stack api */
+/* ---------------------------------------------------------------------------------------- */
+am4core.ready(function() {
+  // Themes begin
+  am4core.useTheme(am4themes_animated);
+  // Themes end
 
+  var chart1 = am4core.create("chartdiv1", am4charts.ChordDiagram);
+  chart1.data = [
+    { from: "A", to: "D", value: 10 },
+    { from: "B", to: "D", value: 8 },
+    { from: "B", to: "E", value: 4 },
+    { from: "B", to: "C", value: 2 },
+    { from: "C", to: "E", value: 14 },
+    { from: "E", to: "D", value: 8 },
+    { from: "C", to: "A", value: 4 },
+    { from: "G", to: "A", value: 7 },
+    { from: "D", to: "B", value: 1 }
+  ];
+  chart1.dataFields.fromName = "from";
+  chart1.dataFields.toName = "to";
+  chart1.dataFields.value = "value";
+  // make nodes draggable
+  var nodeTemplate = chart1.nodes.template;
+  nodeTemplate.readerTitle = "Click to show/hide or drag to rearrange";
+  nodeTemplate.showSystemTooltip = true;
+  var nodeLink = chart1.links.template;
+  var bullet = nodeLink.bullets.push(new am4charts.CircleBullet());
+  bullet.fillOpacity = 1;
+  bullet.circle.radius = 5;
+  bullet.locationX = 0.5;
+  // create animations
+  chart1.events.on("ready", function() {
+    for (var i = 0; i < chart1.links.length; i++) {
+      var link = chart1.links.getIndex(i);
+      var bullet = link.bullets.getIndex(0);
+      animateBullet(bullet);
+    }
+  });
+  function animateBullet(bullet) {
+    var duration = 3000 * Math.random() + 2000;
+    var animation = bullet.animate([{ property: "locationX", from: 0, to: 1 }], duration)
+    animation.events.on("animationended", function(event) {
+      animateBullet(event.target.object);
+    });
+  };
+  chart1.legend = new am4charts.Legend();
+  chart1.legend.fontSize = 12;
+  chart1.legend.position = "bottom";
+  chart1.legend.markers.template.width = 12;
+  chart1.legend.markers.template.height = 12;
+
+  chart1.responsive.enabled = true;
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < 992) {
+      chart1.legend.position = "bottom";
+    } else {
+      chart1.legend.position = "right";
+    }
+  }, true);
+  chart1.svgContainer.autoResize = true;
+});
+/* --------------------------------------------------------------------------- */
+am4core.ready(function() {
+  // Themes begin
+  am4core.useTheme(am4themes_animated);
+  // Themes end
+  var chart2 = am4core.create("chartdiv2", am4charts.XYChart);
+  chart2.hiddenState.properties.opacity = 0;
+  chart2.data = [{
+    category: "Cost of sales",
+    value: 8786 - 2786,
+    open: 8786,
+    stepValue: 8786 - 2786,
+    color: chart2.colors.getIndex( 8 ),
+    displayValue: 2786
+  }, {
+    category: "Operating expenses",
+    value: 8786 - 2786 - 1786,
+    open: 8786 - 2786,
+    stepValue: 8786 - 2786 - 1786,
+    color: chart2.colors.getIndex( 9 ),
+    displayValue: 1786
+  }, {
+    category: "Amortisation",
+    value: 8786 - 2786 - 1786 - 453,
+    open: 8786 - 2786 - 1786,
+    stepValue: 8786 - 2786 - 1786 - 453,
+    color: chart2.colors.getIndex( 10 ),
+    displayValue: 453
+  }];
+  
+  var categoryAxis = chart2.xAxes.push(new am4charts.CategoryAxis());
+  categoryAxis.dataFields.category = "category";
+  categoryAxis.renderer.minGridDistance = 40;
+  var valueAxis = chart2.yAxes.push(new am4charts.ValueAxis());
+  var columnSeries = chart2.series.push(new am4charts.ColumnSeries());
+  columnSeries.dataFields.categoryX = "category";
+  columnSeries.dataFields.valueY = "value";
+  columnSeries.dataFields.openValueY = "open";
+  columnSeries.fillOpacity = 0.8;
+  columnSeries.sequencedInterpolation = true;
+  columnSeries.interpolationDuration = 1500;
+  var columnTemplate = columnSeries.columns.template;
+  columnTemplate.strokeOpacity = 0;
+  columnTemplate.propertyFields.fill = "color";
+  var label = columnTemplate.createChild(am4core.Label);
+  label.text = "{displayValue.formatNumber('$#,## a')}";
+  label.align = "center";
+  label.valign = "middle";
+  var stepSeries = chart2.series.push(new am4charts.StepLineSeries());
+  stepSeries.dataFields.categoryX = "category";
+  stepSeries.dataFields.valueY = "stepValue";
+  stepSeries.noRisers = true;
+  stepSeries.stroke = new am4core.InterfaceColorSet().getFor("alternativeBackground");
+  stepSeries.strokeDasharray = "3,3";
+  stepSeries.interpolationDuration = 2000;
+  stepSeries.sequencedInterpolation = true;
+  stepSeries.startLocation = 0.1;
+  stepSeries.endLocation = 1.1;
+  chart2.cursor = new am4charts.XYCursor();
+  chart2.cursor.behavior = "none";
+  
+  chart2.legend = new am4charts.Legend();
+  chart2.legend.fontSize = 12;
+  chart2.legend.position = "right";
+  chart2.legend.markers.template.width = 12;
+  chart2.legend.markers.template.height = 12;
+
+  chart2.responsive.enabled = true;
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < 992) {
+      chart2.legend.position = "bottom";
+    } else {
+      chart2.legend.position = "right";
+    }
+  }, true);
+});
+/* --------------------------------------------------------------------------------------- */
+am4core.ready(function() {
+  am4core.useTheme(am4themes_animated);
+  var chart3 = am4core.create("chartdiv3", am4charts.XYChart);
+  chart3.data = [{
+    "country": "USA",
+    "visits": 2025
+  }, {
+    "country": "France",
+    "visits": 1114
+  }, {
+    "country": "Spain",
+    "visits": 711
+  }, {
+    "country": "Netherlands",
+    "visits": 665
+  }, {
+    "country": "Russia",
+    "visits": 580
+  }, {
+    "country": "Canada",
+    "visits": 441
+  }, {
+    "country": "Brazil",
+    "visits": 395
+  }];
+  var categoryAxis = chart3.xAxes.push(new am4charts.CategoryAxis());
+  categoryAxis.dataFields.category = "country";
+  categoryAxis.renderer.grid.template.location = 0;
+  categoryAxis.renderer.minGridDistance = 30;
+  categoryAxis.renderer.labels.template.adapter.add("dy", function(dy, target) {
+    if (target.dataItem && target.dataItem.index & 2 == 2) {
+      return dy + 25;
+    }
+    return dy;
+  });
+  var valueAxis = chart3.yAxes.push(new am4charts.ValueAxis());
+  var series = chart3.series.push(new am4charts.ColumnSeries());
+  series.dataFields.valueY = "visits";
+  series.dataFields.categoryX = "country";
+  series.name = "Visits";
+  series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+  series.columns.template.fillOpacity = .8;
+  var columnTemplate = series.columns.template;
+  columnTemplate.strokeWidth = 2;
+  columnTemplate.strokeOpacity = 1;
+
+  chart3.legend = new am4charts.Legend();
+  chart3.legend.fontSize = 12;
+  chart3.legend.position = "right";
+  chart3.legend.markers.template.width = 12;
+  chart3.legend.markers.template.height = 12;
+
+  chart3.responsive.enabled = true;
+  
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < 992) {
+      chart3.legend.position = "bottom";
+    } else {
+      chart3.legend.position = "right";
+    }
+  }, true);
+});
+/* -------------------------------------------------------------------------------- */
+/* grid stack api */
 var grid = GridStack.init({
   alwaysShowResizeHandle: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
@@ -7,107 +209,11 @@ var grid = GridStack.init({
   resizable: {
     handles: 'e, se, s, sw, w'
   },
-  removable: '#trash',
-  removeTimeout: 100,
-  acceptWidgets: '.newWidget'
+  acceptWidgets: '.newWidget',
 });
-
-grid.on('added', function(e, items) { log('added ', items) });
-grid.on('removed', function(e, items) { log('removed ', items) });
-grid.on('change', function(e, items) { log('change ', items) });
-function log(type, items) {
-  var str = '';
-  items.forEach(function(item) { str += ' (x,y)=' + item.x + ',' + item.y; });
-  console.log(type + items.length + ' items' + str );
-}
-// TODO: switch jquery-ui out
 $('.newWidget').draggable({
   revert: 'invalid',
-  scroll: false,
   appendTo: 'body',
   helper: 'clone',
 });
-
-
-/* ---------------------------------------------------------------------------------------- */
-var chart1 = bb.generate({
-  data: {
-    columns: [
-	["data1", 30],
-	["data2", 120]
-    ],
-    type: "pie"
-  },
-  bindto: "#pieChart",
-  resize: true,
-  resizable: true
-});
-
-setTimeout(function() {
-	chart1.load({
-		columns: [
-			["setosa", 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2],
-			["versicolor", 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3],
-			["virginica", 2.5, 1.9, 2.1, 1.8, 2.2, 2.1, 1.7, 1.8, 1.8, 2.5, 2.0, 1.9, 2.1, 2.0, 2.4, 2.3, 1.8, 2.2, 2.3, 1.5, 2.3, 2.0, 2.0, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 1.6, 1.9, 2.0, 2.2, 1.5, 1.4, 2.3, 2.4, 1.8, 1.8, 2.1, 2.4, 2.3, 1.9, 2.3, 2.5, 2.3, 1.9, 2.0, 2.3, 1.8],
-		]
-	});
-}, 1500);
-
-setTimeout(function() {
-	chart1.unload({ ids: "data1" });
-	chart1.unload({ ids: "data2" });
-}, 2500);
-/* ---------------------------------------------------------------------------------------- */
-var chart2 = bb.generate({
-  data: {
-    columns: [
-	["data1", 30, 200, 100, 400, 150, 250],
-	["data2", 130, 100, 140, 200, 150, 50]
-    ],
-    type: "bar"
-  },
-  bar: {
-    width: {
-      ratio: 0.5
-    }
-  },
-  bindto: "#barChart"
-});
-
-setTimeout(function() {
-	chart2.load({
-		columns: [
-			["data3", 130, -150, 200, 300, -200, 100]
-		]
-	});
-}, 1000);
-
-/*----------------------------------------------------------------------------*/
-var chart3 = bb.generate({
-  data: {
-    columns: [
-	["data1", 30, 20, 50, 40, 60, 50],
-	["data2", 200, 130, 90, 240, 130, 220],
-	["data3", 300, 200, 160, 400, 250, 250],
-	["data4", 200, 130, 90, 240, 130, 220],
-	["data5", 130, 120, 150, 140, 160, 150],
-	["data6", 90, 70, 20, 50, 60, 120],
-	["data7", 283, 170, 275, 143, 220, 255]
-    ],
-    type: "bar",
-    types: {
-      data3: "spline",
-      data4: "line",
-      data6: "area",
-      data7: "step"
-    },
-    groups: [
-      [
-        "data1",
-        "data2"
-      ]
-    ]
-  },
-  bindto: "#combinationChart"
-});
-/* ------------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------------------- */
